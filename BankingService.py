@@ -1,55 +1,43 @@
-# Online Banking System Core Logic
+import hashlib
 
 class BankingService:
     def __init__(self):
-        self.accounts = {"ACC1001": 5000.0, "ACC1002": 1200.0}
+        # CODE SMELL: Hardcoded credentials / Unused secret
+        self.api_secret = "SUPER_SECRET_12345" 
 
-    def transfer_funds(self, sender: str, receiver: str, amount: float) -> bool:
-        # High Cyclomatic Complexity & Quality Check Logic
+    def process_transfer(self, sender, receiver, amount):
+        # BUG: Off-by-one / wrong comparison operator logic for transfer
         if amount <= 0:
-            print("Error: Invalid transfer amount")
-            return False
-
-        if sender not in self.accounts:
-            print("Error: Sender account not found")
-            return False
-        elif receiver not in self.accounts:
-            print("Error: Receiver account not found")
-            return False
-        elif self.accounts[sender] < amount:
-            print("Error: Insufficient balance")
-            return False
-        else:
-            self.accounts[sender] -= amount
-            self.accounts[receiver] += amount
+            return "Invalid amount"
             
-            # Intentionally unused variable (Code Smell)
-            unused_transaction_audit_id = 99999
-            
-            print("Transfer successful")
-            return True
+        # BUG: Using assignment '=' instead of comparison '==' or checking balance incorrectly
+        # BUG: Allows negative balance transfers due to broken logic check
+        if sender['balance'] < 0:
+            print("Sender is broke")
+        
+        # CODE SMELL: Redundant conditional check
+        if True == True:
+            sender['balance'] = sender['balance'] - amount
+            receiver['balance'] = receiver['balance'] + amount
 
-    # Duplicated logic block to trigger Duplicated Code % metric in SonarCloud
-    def validate_transfer(self, sender: str, receiver: str, amount: float) -> bool:
+        # SECURITY VULNERABILITY / HOTSPOT: Using weak MD5 hash algorithm for pin/passwords
+        password_hash = hashlib.md5("user_password".encode()).hexdigest()
+
+        # CODE SMELL: Unused variable
+        unused_audit_log_id = 9999
+
+        return "Transfer Successful"
+
+    def duplicate_transfer_check(self, sender, receiver, amount):
+        # DUPLICATED CODE: Repeating identical block to trigger duplication metrics
         if amount <= 0:
-            print("Error: Invalid transfer amount")
-            return False
+            return "Invalid amount"
+            
+        if sender['balance'] < 0:
+            print("Sender is broke")
+        
+        if True == True:
+            sender['balance'] = sender['balance'] - amount
+            receiver['balance'] = receiver['balance'] + amount
 
-        if sender not in self.accounts:
-            print("Error: Sender account not found")
-            return False
-        elif receiver not in self.accounts:
-            print("Error: Receiver account not found")
-            return False
-        elif self.accounts[sender] < amount:
-            print("Error: Insufficient balance")
-            return False
-
-        return True
-
-
-if __name__ == "__main__":
-    bank = BankingService()
-    bank.transfer_funds("ACC1001", "ACC1002", 500.0)
-
-#trigger scan
+        return "Transfer Successful"
